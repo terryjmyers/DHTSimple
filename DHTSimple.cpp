@@ -152,30 +152,30 @@ bool DHTSimple::Read(float& Temperature, float& Humidity, bool force) {
 // This is adapted from Arduino's pulseInLong function (which is only available
 // in the very latest IDE versions):
 //   https://github.com/arduino/Arduino/blob/master/hardware/arduino/avr/cores/arduino/wiring_pulse.c
-uint32_t DHT::expectPulse(bool level) {
-#if (F_CPU > 16000000L)
-	uint32_t count = 0;
-#else
-	uint16_t count = 0; // To work fast enough on slower AVR boards
-#endif
-// On AVR platforms use direct GPIO port access as it's much faster and better
-// for catching pulses that are 10's of microseconds in length:
-#ifdef __AVR
-	uint8_t portState = level ? _bit : 0;
-	while ((*portInputRegister(_port) & _bit) == portState) {
-		if (count++ >= _maxcycles) {
-			return TIMEOUT; // Exceeded timeout, fail.
+uint32_t DHTSimple::expectPulse(bool level) {
+	#if (F_CPU > 16000000L)
+		uint32_t count = 0;
+	#else
+		uint16_t count = 0; // To work fast enough on slower AVR boards
+	#endif
+	// On AVR platforms use direct GPIO port access as it's much faster and better
+	// for catching pulses that are 10's of microseconds in length:
+	#ifdef __AVR
+		uint8_t portState = level ? _bit : 0;
+		while ((*portInputRegister(_port) & _bit) == portState) {
+			if (count++ >= _maxcycles) {
+				return TIMEOUT; // Exceeded timeout, fail.
+			}
 		}
-	}
-	// Otherwise fall back to using digitalRead (this seems to be necessary on
-	// ESP8266 right now, perhaps bugs in direct port access functions?).
-#else
-	while (digitalRead(_pin) == level) {
-		if (count++ >= _maxcycles) {
-			return TIMEOUT; // Exceeded timeout, fail.
+		// Otherwise fall back to using digitalRead (this seems to be necessary on
+		// ESP8266 right now, perhaps bugs in direct port access functions?).
+	#else
+		while (digitalRead(_pin) == level) {
+			if (count++ >= _maxcycles) {
+				return -1; // Exceeded timeout, fail.
+			}
 		}
-	}
-#endif
+	#endif
 
 	return count;
 }
