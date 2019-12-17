@@ -19,6 +19,8 @@ Two Functions
 
 Usage (note that I didn't actually test this code):
 ```
+#include <DHTSimple.h>
+
 DHTSimple dht;
 float Temperature;
 float Humidity;
