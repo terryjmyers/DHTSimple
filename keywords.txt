@@ -13,4 +13,5 @@ DHTSimple	KEYWORD1
 ###########################################
 
 begin KEYWORD2
+Read KEYWORD2
 
